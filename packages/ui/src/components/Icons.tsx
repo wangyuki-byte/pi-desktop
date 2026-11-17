@@ -137,6 +137,11 @@ const paths: Record<IconName, ReactNode> = {
 	terminal: <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="m7 9 3 3-3 3M12 15h5" /></>,
 };
 
+/** Runtime guard for config-provided icon names; unknown names fall back to a default glyph. */
+export function isKnownIcon(name: string): name is IconName {
+	return name in paths;
+}
+
 export function Icon({ name, ...props }: SVGProps<SVGSVGElement> & { name: IconName }) {
 	return (
 		<svg

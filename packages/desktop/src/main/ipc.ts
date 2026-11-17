@@ -21,6 +21,7 @@ import { initSplitPanes, openSplitPane, closeSplitPane, setPaneBounds, setPaneHi
 import { getAppLocale, setAppLocale } from './appLocale';
 import { appIconPath, destroyAppTray, invalidateAppTrayData, updateAppTrayMenu } from './tray';
 import { updateService } from './updateService';
+import { createUiExtensionsService, type UiExtensionsService } from './uiExtensionsService';
 export { updateService } from './updateService';
 import { registerWorkbenchIpc } from './workbenchIpc';
 import type { WorkbenchService } from './workbenchService';
@@ -100,6 +101,7 @@ let lastSessionMetaPrune = 0;
 let sessionGroupService: SessionGroupService | null = null;
 let automationService: ReturnType<typeof createAutomationService> | null = null;
 let goalWatchService: ReturnType<typeof createGoalWatchService> | null = null;
+let uiExtensionsService: UiExtensionsService | null = null;
 let pluginMutationActive = false;
 /** Background plugin install while conversations run: never blocks new conversations or project switches. */
 let pluginInstallActive = false;
@@ -1353,6 +1355,8 @@ export function registerIpc(options: {
 	});
 	notifyInputRequest = (request) => notifier.handleInputRequest(request, activeSessionPath, agentService.cwd || activeWorkspace);
 	keepAwake = createKeepAwakeController({ settingsPath: desktopSettingsPath, defaultStorageDirectory: join(app.getPath('home'), 'PiDesktopWorkspace') });
+	uiExtensionsService = createUiExtensionsService({ broadcast: (snapshot) => broadcastToRenderers(IPC_CHANNELS.uiExtensionsChanged, snapshot) });
+	uiExtensionsService.start();
 	updateService.setAutoInstallSource(() => readCurrentDesktopSettings().autoInstallUpdates === true);
 	appearancePath = appearanceStatePath(options.baseUserData ?? app.getPath('userData'));
 	// Only the full app resumes interrupted conversations; isolated multi-profile launches keep none.
@@ -1380,6 +1384,11 @@ export function registerIpc(options: {
 		},
 	});
 	setRendererSenderRestriction({ isPaiSender: (event) => isPaiSender(event) || isPaneSender(event), mainOnlyChannels, hostedWorkspace: (event) => paiSlotForSender(event.sender)?.cwd ?? paneSlotForSender(event.sender)?.cwd });
+	handleRendererInvoke(IPC_CHANNELS.uiExtensionsState, () => uiExtensionsService?.getSnapshot() ?? { version: 1, elements: [], error: null });
+	handleRendererInvoke(IPC_CHANNELS.uiExtensionsInvoke, (_event, request: { elementId?: unknown }) => {
+		if (typeof request?.elementId !== 'string' || !request.elementId) throw new Error('UI 扩展元素 id 无效');
+		return uiExtensionsService?.invoke(request.elementId);
+	});
 	handleRendererInvoke(MCP_FEATURE_CHANNELS.getMcpSnapshot, (event) => agentFor(event).getMcpSnapshot());
 	handleRendererInvoke(MCP_FEATURE_CHANNELS.saveMcpServer, (event, request: Parameters<typeof agentService.saveMcpServer>[0]) => agentFor(event).saveMcpServer(request));
 	handleRendererInvoke(MCP_FEATURE_CHANNELS.removeMcpServer, (event, request: Parameters<typeof agentService.removeMcpServer>[0]) => agentFor(event).removeMcpServer(request));
@@ -2394,6 +2403,8 @@ export function disposeServices(): Promise<void> {
 	destroyAppTray();
 	goalWatchService?.dispose();
 	goalWatchService = null;
+	uiExtensionsService?.stop();
+	uiExtensionsService = null;
 	for (const queue of startupNotifications.values()) queue.cleanup();
 	for (const pending of pendingDialogs.values()) pending.resolve(null);
 	if (automaticRecoveryTimer) clearTimeout(automaticRecoveryTimer);

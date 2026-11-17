@@ -23,6 +23,8 @@ import type { SideQuestionFeatureBridge } from './sideQuestions';
 export * from './sideQuestions.ts';
 import type { DataFeaturesBridge } from './dataFeatures';
 import type { WorkbenchFeaturesBridge } from './workbenchFeatures';
+import type { UiExtensionSnapshot, UiExtensionInvokeRequest } from './uiExtensions';
+export * from './uiExtensions.ts';
 import type { CloudSyncFeaturesBridge } from './cloudSync';
 import type { UiDebugApiConfig, UiDebugApiState } from './debugApi';
 export * from './inputFeatures.ts';
@@ -79,6 +81,9 @@ export const IPC_CHANNELS = {
   updateStateChanged: 'update:state-changed',
   updateCheck: 'update:check',
   updateInstall: 'update:install',
+  uiExtensionsState: 'ui-extensions:state',
+  uiExtensionsChanged: 'ui-extensions:changed',
+  uiExtensionsInvoke: 'ui-extensions:invoke',
   agentInit: 'agent:init',
   agentPrompt: 'agent:prompt',
   agentEditMessage: 'agent:edit-message',
@@ -1195,6 +1200,11 @@ export interface AgentBridge extends InputFeatureBridge, DataFeaturesBridge, Wor
   checkForUpdates(autoInstall?: boolean): Promise<UiUpdateState>;
   installUpdate(): Promise<void>;
   onUpdateStateChanged(listener: (state: UiUpdateState) => void): () => void;
+  /** Declarative UI elements (top-bar buttons) from ~/.pi/desktop-ui/extensions.json. */
+  getUiExtensions(): Promise<UiExtensionSnapshot>;
+  /** Runs the main-process half of an element action ('url' | 'script'); 'prompt' and 'command' stay renderer-side. */
+  invokeUiExtension(request: UiExtensionInvokeRequest): Promise<void>;
+  onUiExtensionsChanged(listener: (snapshot: UiExtensionSnapshot) => void): () => void;
   getDesktopSettings(): Promise<UiDesktopSettings>;
   setDesktopSettings(patch: Partial<UiDesktopSettings>): Promise<UiDesktopSettings>;
   getDebugApiState(): Promise<UiDebugApiState>;

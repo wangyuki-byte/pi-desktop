@@ -5,7 +5,7 @@ import { WORKBENCH_FEATURE_CHANNELS } from '@pidesktop/shared/workbenchFeatures'
 import { DATA_FEATURE_CHANNELS } from '@pidesktop/shared/dataFeatures';
 import { INPUT_FEATURE_CHANNELS } from '@pidesktop/shared/inputFeatures';
 import { contextBridge, ipcRenderer, webUtils } from 'electron';
-import { CLOUD_SYNC_FEATURE_CHANNELS, DEBUG_API_CHANNELS, IPC_CHANNELS, SIDE_QUESTION_CHANNELS, type AgentBridge, type AgentEventEnvelope, type UiAppCommand, type UiAutomationSnapshot, type UiCloudSyncState, type UiDebugApiConfig, type UiDebugApiState, type UiExtensionDialogRequest, type UiSideQuestion, type UiSplitPaneState, type UiUpdateState, type WindowChromeState, type WorkspaceChangeEvent, type WorkspaceCommandEvent } from '@pidesktop/shared';
+import { CLOUD_SYNC_FEATURE_CHANNELS, DEBUG_API_CHANNELS, IPC_CHANNELS, SIDE_QUESTION_CHANNELS, type AgentBridge, type AgentEventEnvelope, type UiAppCommand, type UiAutomationSnapshot, type UiCloudSyncState, type UiDebugApiConfig, type UiDebugApiState, type UiExtensionDialogRequest, type UiExtensionSnapshot, type UiSideQuestion, type UiSplitPaneState, type UiUpdateState, type WindowChromeState, type WorkspaceChangeEvent, type WorkspaceCommandEvent } from '@pidesktop/shared';
 import { unwrapIpcError } from './ipcErrors';
 
 /**
@@ -76,6 +76,12 @@ const onAppCommand: AgentBridge['onAppCommand'] = (listener) => {
 	const wrapped = (_e: Electron.IpcRendererEvent, command: UiAppCommand): void => listener(command);
 	ipcRenderer.on(IPC_CHANNELS.appCommand, wrapped);
 	return () => ipcRenderer.removeListener(IPC_CHANNELS.appCommand, wrapped);
+};
+
+const onUiExtensionsChanged: AgentBridge['onUiExtensionsChanged'] = (listener) => {
+	const wrapped = (_e: Electron.IpcRendererEvent, snapshot: UiExtensionSnapshot): void => listener(snapshot);
+	ipcRenderer.on(IPC_CHANNELS.uiExtensionsChanged, wrapped);
+	return () => ipcRenderer.removeListener(IPC_CHANNELS.uiExtensionsChanged, wrapped);
 };
 
 const onUpdateStateChanged: AgentBridge['onUpdateStateChanged'] = (listener) => {
@@ -180,6 +186,9 @@ const bridge: AgentBridge = {
 	checkForUpdates: (autoInstall?: boolean) => invoke(IPC_CHANNELS.updateCheck, autoInstall === true),
 	installUpdate: () => invoke(IPC_CHANNELS.updateInstall),
 	onUpdateStateChanged,
+	getUiExtensions: () => invoke(IPC_CHANNELS.uiExtensionsState),
+	invokeUiExtension: (request) => invoke(IPC_CHANNELS.uiExtensionsInvoke, request),
+	onUiExtensionsChanged,
 	getDesktopSettings: () => invoke(IPC_CHANNELS.desktopSettingsGet),
 	setDesktopSettings: (patch) => invoke(IPC_CHANNELS.desktopSettingsSet, patch),
 	probePiEngine: (path) => invoke(IPC_CHANNELS.piEngineProbe, path),

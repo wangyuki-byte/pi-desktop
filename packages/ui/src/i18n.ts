@@ -1160,6 +1160,8 @@ export const translations: Record<string, { 'zh-CN': string; 'en-US': string }> 
   'update.noticeReady': { 'zh-CN': '新版本 {version} 已准备就绪，重启后生效', 'en-US': 'Update {version} is ready. Restart to apply it.' },
   'update.noticeInstall': { 'zh-CN': '立即更新', 'en-US': 'Update now' },
   'update.noticeLater': { 'zh-CN': '稍后', 'en-US': 'Later' },
+  'uiext.needSession': { 'zh-CN': '打开会话后可用', 'en-US': 'Available after opening a session' },
+  'uiext.actionFailed': { 'zh-CN': '执行失败', 'en-US': 'Action failed' },
   'settings.updateUnavailable.development': { 'zh-CN': '开发模式无法检查更新', 'en-US': 'Updates are unavailable in development mode' },
   'settings.updateUnavailable.portable': { 'zh-CN': '便携版不支持应用内更新，请下载新版 Portable 文件', 'en-US': 'The portable app cannot update itself. Download the new Portable file.' },
   'settings.updateUnavailable.uninstalled-copy': { 'zh-CN': '当前运行的是未安装的副本（如构建目录），请从开始菜单的 Pi Desktop 更新', 'en-US': 'This is an unpacked copy, not the installed app. Update from the installed Pi Desktop.' },

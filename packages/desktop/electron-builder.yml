@@ -38,7 +38,7 @@ extraResources:
 # overrides aligned with the embedded out/update-config.json.
 publish:
   provider: generic
-  url: https://github.com/shuaichao171/pi-desktop/releases/latest/download/
+  url: https://github.com/wangyuki-byte/pi-desktop/releases/latest/download/
 
 win:
   icon: build/icon.ico

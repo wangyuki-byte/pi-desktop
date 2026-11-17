@@ -58,6 +58,11 @@ html.pd-search-widget-open .is-frameless .pd-top-bar { -webkit-app-region: no-dr
 .pd-top-bar :is(button, [role='button']):focus-visible { outline: 2px solid var(--pd-focus-border); outline-offset: -2px; background: var(--pd-sidebar-hover); }
 /* Extension slot sits left of a divider; system actions stay right-aligned. */
 .pd-top-bar-extensions { display: flex; flex: 0 0 auto; align-items: center; gap: 4px; -webkit-app-region: no-drag; }
+/* Declarative buttons from ~/.pi/desktop-ui/extensions.json share the workspace-button geometry. */
+.pd-topbar-ext-button { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 28px; padding: 0; border: 0; border-radius: var(--pd-radius-sm); background: transparent; color: var(--pd-text-subtle); cursor: pointer; }
+.pd-topbar-ext-button:hover:not(:disabled) { background: var(--pd-sidebar-hover); color: var(--pd-text); }
+.pd-topbar-ext-button:disabled { opacity: .45; cursor: default; }
+.pd-topbar-ext-button.is-failed { color: var(--pd-danger); }
 .pd-top-bar-divider { flex: 0 0 auto; align-self: center; width: 1px; height: 20px; margin: 0 6px; background: var(--pd-sidebar-surface); }
 .pd-top-bar-workspace-button { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 28px; padding: 0; border: 0; border-radius: var(--pd-radius-sm); background: transparent; color: var(--pd-text-subtle); cursor: pointer; }
 .pd-top-bar-menu { flex: 0 0 30px; width: 30px; height: 28px; color: var(--pd-text); }

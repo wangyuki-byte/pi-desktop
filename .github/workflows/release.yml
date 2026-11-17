@@ -18,7 +18,7 @@ permissions:
   contents: read
 
 env:
-  PI_DESKTOP_UPDATE_URL: ${{ vars.PI_DESKTOP_UPDATE_URL || 'https://github.com/shuaichao171/pi-desktop/releases/latest/download/' }}
+  PI_DESKTOP_UPDATE_URL: ${{ vars.PI_DESKTOP_UPDATE_URL || 'https://github.com/wangyuki-byte/pi-desktop/releases/latest/download/' }}
 
 concurrency:
   group: desktop-release-${{ inputs.tag || github.ref_name }}

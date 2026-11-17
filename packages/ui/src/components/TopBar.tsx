@@ -1,4 +1,5 @@
 import { useT } from '../i18n';
+import { TopBarExtensions } from './TopBarExtensions';
 import { Icon } from './Icons';
 import { HoverTooltip } from './HoverTooltip';
 import { HistoryNavigation, type HistoryNavigationProps } from './HistoryNavigation';
@@ -58,7 +59,7 @@ export function TopBar({ history, searchOpen, searchButtonRef, onOpenSearch, mai
 				</>}
 			</div>
 			{/* Extension slot: views contributed by plugins render here, left of the divider. */}
-			<div className="pd-top-bar-extensions" data-extension-slot="top-bar" />
+			<div className="pd-top-bar-extensions" data-extension-slot="top-bar"><TopBarExtensions /></div>
 			<div className="pd-top-bar-divider" aria-hidden="true" />
 			<div className="pd-top-bar-actions">{isWindows && <WindowControls inline />}</div>
 		</header>
